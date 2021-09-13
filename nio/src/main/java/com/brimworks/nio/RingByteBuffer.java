@@ -172,7 +172,10 @@ public class RingByteBuffer implements Comparable<RingByteBuffer> {
         buff.position(begin);
         if (begin + size <= capacity) {
             buff.limit(begin + size);
-            return channel.write(buff.slice().asReadOnlyBuffer());
+            long count = channel.write(buff.slice().asReadOnlyBuffer());
+            begin += count;
+            size -= count;
+            return count;
         }
         buff.limit(buff.capacity());
         ByteBuffer[] buffs = new ByteBuffer[] {
@@ -183,7 +186,10 @@ public class RingByteBuffer implements Comparable<RingByteBuffer> {
         buff.position(0);
         buff.limit((begin + size) % capacity);
         buffs[1] = buff.slice().asReadOnlyBuffer();
-        return channel.write(buffs);
+        long count = channel.write(buffs);
+        begin = (begin + (int)count) % capacity;
+        size -= count;
+        return count;
     }
 
     /**
@@ -209,7 +215,9 @@ public class RingByteBuffer implements Comparable<RingByteBuffer> {
         buff.position(invalidBegin);
         if (invalidBegin + invalidSize <= capacity) {
             buff.limit(invalidBegin + invalidSize);
-            return channel.read(buff.slice());
+            long count = channel.read(buff.slice());
+            size += count;
+            return count;
         }
         buff.limit(buff.capacity());
         ByteBuffer[] buffs = new ByteBuffer[] {
@@ -220,7 +228,9 @@ public class RingByteBuffer implements Comparable<RingByteBuffer> {
         buff.position(0);
         buff.limit((invalidBegin + invalidSize) % capacity);
         buffs[1] = buff.slice();
-        return channel.read(buffs);
+        long count = channel.read(buffs);
+        size += count;
+        return count;
     }
 
     /**

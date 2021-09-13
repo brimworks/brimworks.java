@@ -178,7 +178,7 @@ public class TestRingByteBuffer {
         RingByteBuffer buff = RingByteBuffer.allocate(5);
         assertEquals(5L, buff.readFrom(channel));
         assertEquals(0, channel.getBuffer().size());
-        assertEquals(buff, newWrappedBuffer());
+        assertEquals(newWrappedBuffer(), buff);
     }
 
     @Test
