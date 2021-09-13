@@ -8,7 +8,6 @@ import java.nio.ByteOrder;
 import java.nio.ReadOnlyBufferException;
 import java.nio.channels.GatheringByteChannel;
 import java.nio.channels.ScatteringByteChannel;
-import java.util.Objects;
 
 /**
  * Working with ByteBuffers directly is difficult since it is unclear when
@@ -597,6 +596,11 @@ public class RingByteBuffer implements Comparable<RingByteBuffer> {
         return sb.toString();
     }
 
+    /**
+     * @return less than zero if this buffer sorts before the other buffer, 0
+     *     if the buffer contents are the same, or more than zero if the
+     *     contents would sort after the other buffer.
+     */
     @Override
     public int compareTo(RingByteBuffer other) {
         int capacity = buff.capacity();
@@ -619,6 +623,9 @@ public class RingByteBuffer implements Comparable<RingByteBuffer> {
     }
 
 
+    /**
+     * @return true if the contents of two ring buffers is the same.
+     */
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof RingByteBuffer)) {
@@ -643,41 +650,18 @@ public class RingByteBuffer implements Comparable<RingByteBuffer> {
         return true;
     }
 
+    /**
+     * @return a hash code consistent with the content of the buffer. Note that
+     *     storing a RingByteBuffer as a key is not wise if the contents of the
+     *     RingByteBuffer may change.
+     */
     @Override
     public int hashCode() {
-        try {
-            return (int)writeTo(TO_HASH_CODE);
-        } catch (IOException ex) {
-            // Unreachable.
-            throw new IllegalStateException(ex);
+        int capacity = buff.capacity();
+        int hash = 1;
+        for (int i = 0; i < size; i++) {
+            hash = 31 * hash + buff.get((begin + i) % capacity);
         }
-    }
-
-    private static final ToHashCode TO_HASH_CODE = new ToHashCode();
-    private static class ToHashCode implements GatheringByteChannel {
-        @Override
-        public int write(ByteBuffer src) throws IOException {
-            return Objects.hash(src);
-        }
-
-        @Override
-        public boolean isOpen() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void close() throws IOException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public long write(ByteBuffer[] srcs, int offset, int length) throws IOException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public long write(ByteBuffer[] srcs) throws IOException {
-            return Objects.hash(srcs[0], srcs[1]);
-        }
+        return hash;
     }
 }
