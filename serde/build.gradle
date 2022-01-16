@@ -1,0 +1,89 @@
+plugins {
+    id 'java-library'
+    id 'jacoco'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
+
+	compileOnly 'org.projectlombok:lombok:1.18.22'
+	annotationProcessor 'org.projectlombok:lombok:1.18.22'
+	
+	testCompileOnly 'org.projectlombok:lombok:1.18.22'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+}
+
+test {
+	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+        outputs.upToDateWhen {false}
+        showStandardStreams = true
+        exceptionFormat "full"
+	}
+    finalizedBy jacocoTestReport // report is always generated after tests run
+}
+
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                counter = 'BRANCH'
+                minimum = 0.7
+            }
+            limit {
+                counter = 'LINE'
+                minimum = 0.7
+            }
+        }
+    }
+}
+
+// START
+def ragels = []
+
+fileTree("src/main/ragel").matching {
+    include "**/*.java.rl"
+}.visit { input ->
+    if ( input.directory ) return
+    def ragel = task "${input.relativePath.toString().replaceAll("[/\\\\:<>\"?*|]", " ")}" (type:Ragel) {
+        inputFile input.file.absoluteFile
+        outputFile file("${buildDir}/generated-srcs/annotations/" + input.relativePath - ".rl")
+    }
+    ragels << ragel
+}
+
+compileJava {
+    dependsOn ragels
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'build/generated-srcs/annotations/'
+        }
+    }
+}
+
+abstract class Ragel extends DefaultTask {
+    @InputFile
+    abstract File inputFile
+    @OutputFile
+    abstract File outputFile
+    @TaskAction
+    void execute(InputChanges inputChanges) {
+        project.exec {
+            commandLine "ragel", "-J", "-o", outputFile, inputFile
+        }
+    }
+};
+// END RAGEL

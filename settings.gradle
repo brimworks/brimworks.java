@@ -9,3 +9,4 @@
 
 rootProject.name = 'com.brimworks'
 include 'nio'
+include 'serde'

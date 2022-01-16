@@ -31,3 +31,5 @@ build
 # VSCode
 .project
 .settings
+.vscode/
+.classpath
