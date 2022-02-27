@@ -1,5 +1,7 @@
 package com.brimworks.serde;
 
+import java.nio.CharBuffer;
+
 public interface SerdeReader {
     /**
      * Read the next "event" from the stream.
@@ -47,11 +49,12 @@ public interface SerdeReader {
     String getErrorString();
 
     /**
-     * @return the string value
+     * @return the char buffer that contains the object key or string value.
+     *     This buffer is read-only and in "get" mode.
      * @throws IllegalStateException unless the last SerdeEvent read() returned
      *     either OBJECT_KEY or VALUE_STRING.
      */
-    String getString();
+    CharBuffer getCharBuffer();
 
     /**
      * @return the boolean value

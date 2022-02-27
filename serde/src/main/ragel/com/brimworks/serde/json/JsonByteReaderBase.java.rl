@@ -5,7 +5,7 @@ import com.brimworks.serde.SerdeEvent;
 
 abstract class JsonByteReaderBase {
     // State that is built.
-    protected NumberParser numberParser;
+    protected JsonNumber numberParser;
     protected StringParser stringParser;
     protected boolean booleanValue;
 

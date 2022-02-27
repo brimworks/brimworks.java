@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import com.brimworks.serde.SerdeNumber;
 
-public class NumberParser implements SerdeNumber {
+public class JsonNumber implements SerdeNumber {
     private int sign = 1;
     private byte[] integer;
     private byte[] fraction;
@@ -87,5 +87,64 @@ public class NumberParser implements SerdeNumber {
         return new BigDecimal(toString());
     }
 
-    // TODO: Make this more efficient by implementing the other methods!
+    @Override
+    public byte byteValue() {
+        return (byte)doubleValue();
+    }
+
+    @Override
+    public byte byteValueExact() {
+        double val = doubleValue();
+        if (val < Byte.MIN_VALUE ||
+            val > Byte.MAX_VALUE ||
+            val % 1 != 0)
+        {
+            throw new ArithmeticException();
+        }
+        return (byte)val;
+    }
+
+    @Override
+    public double doubleValue() {
+        return Double.parseDouble(toString());
+    }
+
+    @Override
+    public float floatValue() {
+        return (float)doubleValue();
+    }
+
+    @Override
+    public int intValue() {
+        return (int)doubleValue();
+    }
+
+    @Override
+    public int intValueExact() {
+        double val = doubleValue();
+        if (val < Integer.MIN_VALUE ||
+            val > Integer.MAX_VALUE ||
+            val % 1 != 0)
+        {
+            throw new ArithmeticException();
+        }
+        return (int)val;
+    }
+    
+    @Override
+    public short shortValue() {
+        return (short)doubleValue();
+    }
+
+    @Override
+    public short shortValueExact() {
+        double val = doubleValue();
+        if (val < Integer.MIN_VALUE ||
+            val > Integer.MAX_VALUE ||
+            val % 1 != 0)
+        {
+            throw new ArithmeticException();
+        }
+        return (short)val;
+    }
 }

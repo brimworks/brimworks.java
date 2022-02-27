@@ -3,15 +3,15 @@ package com.brimworks.serde;
 /**
  * A linked list of path elements used to describe locations.
  */
-public class Path {
-    private Path parent;
+public class SerdePath {
+    private SerdePath parent;
     private int lineNumber;
     private int columnNumber;
     private long byteOffset;
     private int index;
     private String key;
 
-    private Path(Path parent, int lineNumber, int columnNumber, long byteOffset, int index, String key) {
+    private SerdePath(SerdePath parent, int lineNumber, int columnNumber, long byteOffset, int index, String key) {
         this.parent = parent;
         this.lineNumber = lineNumber;
         this.columnNumber = columnNumber;
@@ -20,14 +20,14 @@ public class Path {
         this.key = key;
     }
 
-    public static Path ofObjectKey(String key, Path parent, int lineNumber, int columnNumber, long byteOffset) {
+    public static SerdePath ofObjectKey(String key, SerdePath parent, int lineNumber, int columnNumber, long byteOffset) {
         assert null != key;
-        return new Path(parent, lineNumber, columnNumber, byteOffset, -1, key);
+        return new SerdePath(parent, lineNumber, columnNumber, byteOffset, -1, key);
     }
 
-    public static Path ofArrayIndex(int index, Path parent, int lineNumber, int columnNumber, long byteOffset) {
+    public static SerdePath ofArrayIndex(int index, SerdePath parent, int lineNumber, int columnNumber, long byteOffset) {
         assert index >= 0;
-        return new Path(parent, lineNumber, columnNumber, byteOffset, index, null);
+        return new SerdePath(parent, lineNumber, columnNumber, byteOffset, index, null);
     }
 
     public boolean isObjectKey() {
@@ -76,7 +76,7 @@ public class Path {
     /**
      * @return the parent of the current path or null if no parent
      */
-    public Path getParent() {
+    public SerdePath getParent() {
         return parent;
     }
 

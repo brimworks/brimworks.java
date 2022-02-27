@@ -1,16 +1,16 @@
 package com.brimworks.serde.json;
 
-import com.brimworks.serde.Path;
+import com.brimworks.serde.SerdePath;
 
 public class JsonParseException extends RuntimeException {
-    private Path path;
+    private SerdePath path;
 
-    public JsonParseException(String msg, Path path) {
+    public JsonParseException(String msg, SerdePath path) {
         super(msg + "\n" + path);
         this.path = path;
     }
 
-    public Path getPath() {
+    public SerdePath getPath() {
         return path;
     }
 }

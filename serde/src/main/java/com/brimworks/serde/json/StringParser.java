@@ -63,7 +63,13 @@ public class StringParser {
         }
     }
 
+    public CharBuffer getCharBuffer() {
+        CharBuffer copy = charBuffer.asReadOnlyBuffer();
+        copy.flip();
+        return copy;
+    }
+
     public String toString() {
-        return charBuffer.duplicate().flip().toString();
+        return getCharBuffer().toString();
     }
 }

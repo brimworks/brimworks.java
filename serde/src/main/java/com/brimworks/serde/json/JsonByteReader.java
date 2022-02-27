@@ -5,6 +5,7 @@ import com.brimworks.serde.SerdeEvent;
 import com.brimworks.serde.SerdeNumber;
 
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 
 /**
  * 
@@ -29,7 +30,7 @@ public class JsonByteReader extends JsonByteReaderBase implements SerdeReader {
 
     public JsonByteReader() {
         this.stringParser = new StringParser();
-        this.numberParser = new NumberParser();
+        this.numberParser = new JsonNumber();
         init();
     }
 
@@ -124,14 +125,14 @@ public class JsonByteReader extends JsonByteReaderBase implements SerdeReader {
     }
 
     @Override
-    public String getString() {
+    public CharBuffer getCharBuffer() {
         if (lastEvent != SerdeEvent.VALUE_STRING &&
             lastEvent != SerdeEvent.OBJECT_KEY)
         {
             throw new IllegalStateException(
                 "The last event was " + lastEvent + ", expected STRING");
         }
-        return stringParser.toString();
+        return stringParser.getCharBuffer();
     }
 
     @Override

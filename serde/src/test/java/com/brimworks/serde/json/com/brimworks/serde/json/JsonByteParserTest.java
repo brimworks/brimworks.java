@@ -5,7 +5,6 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ReadOnlyBufferException;
 
-import com.brimworks.serde.Path;
 import com.brimworks.serde.SerdeEvent;
 import com.brimworks.serde.SerdeNumber;
 import com.brimworks.serde.SerdeWriter;
@@ -40,11 +39,11 @@ public class JsonByteParserTest {
         feed("{\n\t\"a\": 1,\n\t\"b\": [A]}", true);
         assertEquals(readNonError(), SerdeEvent.OBJECT_START);
         assertEquals(readNonError(), SerdeEvent.OBJECT_KEY);
-        assertEquals(reader.getString(), "a");
+        assertEquals(reader.getCharBuffer().toString(), "a");
         assertEquals(readNonError(), SerdeEvent.VALUE_NUMBER);
         assertEquals(reader.getNumber().toString(), "1");
         assertEquals(readNonError(), SerdeEvent.OBJECT_KEY);
-        assertEquals(reader.getString(), "b");
+        assertEquals(reader.getCharBuffer().toString(), "b");
         assertEquals(readNonError(), SerdeEvent.ARRAY_START);
         assertEquals(reader.read(), SerdeEvent.ERROR);
         assertEquals(reader.getErrorString(), "Unexpected character 0x41");
@@ -60,13 +59,15 @@ public class JsonByteParserTest {
         }
         return result;
     }
+
     private void feed(String json, boolean done) {
         reader.feed(ByteBuffer.wrap(json.getBytes()), done);
     }
+
     private String parseString(String json) {
         feed(json, true);
         assertEquals(readNonError(), SerdeEvent.VALUE_STRING);
-        return reader.getString();
+        return reader.getCharBuffer().toString();
     }
 
     private String parseNumber(String json) {

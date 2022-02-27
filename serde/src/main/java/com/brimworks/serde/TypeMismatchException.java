@@ -1,14 +1,14 @@
 package com.brimworks.serde;
 
 public class TypeMismatchException extends RuntimeException {
-    private Path path;
+    private SerdePath path;
 
-    public TypeMismatchException(String msg, Path path) {
+    public TypeMismatchException(String msg, SerdePath path) {
         super(msg + "\n" + path);
         this.path = path;
     }
 
-    public Path getPath() {
+    public SerdePath getPath() {
         return path;
     }
 }
